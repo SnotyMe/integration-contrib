@@ -14,7 +14,8 @@ import org.koin.core.annotation.Single
 
 @RegisterNode(
 	displayName = "Studyly",
-	type = Subsystem.INTEGRATION,
+	subsystem = Subsystem.INTEGRATION,
+	type = "studyly",
 	position = NodePosition.START,
 	settingsType = StudylySettings::class,
 	outputType = StudylyHomework::class,
