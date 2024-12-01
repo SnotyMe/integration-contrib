@@ -42,14 +42,14 @@ class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : Node
 		val settings = node.settings as WillhabenListingSettings
 
 		val mappedFromInput = input.mapNotNull {
-			// this node is also a start node, so the input may be the job context, in which case it is not used to fetch listings
+			// this node is also a start node, so the input may be the job context, in which case it is not parsed and used to fetch listings
 			if (it is SimpleIntermediateData) return@mapNotNull null
 
 			val data = get<ListingInput>(it)
 			willhabenAPI.fetchListing(data.url)
 		}
 
-		val mappedFromSettings = settings.listings.map {
+		val mappedFromSettings = settings.listings.mapNotNull {
 			willhabenAPI.fetchListing(it)
 		}
 
