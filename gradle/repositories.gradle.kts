@@ -1,8 +1,7 @@
 dependencyResolutionManagement {
 	repositories {
-		mavenLocal()
 		mavenCentral()
-		maven("https://maven.simulatan.me/releases")
+		maven("https://maven.snoty.me/snapshots")
 		gradlePluginPortal()
 	}
 	versionCatalogs {
