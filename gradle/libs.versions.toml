@@ -1,12 +1,10 @@
 [versions]
-ksp = "2.1.0-1.0.29"
-kotlinx-serialization = "1.7.3"
 kotlin = "2.1.0"
+ksp = "2.1.0-1.0.29"
 
 [plugins]
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-kotlin-dsl = { id = "org.gradle.kotlin.kotlin-dsl", version = "5.1.2" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
