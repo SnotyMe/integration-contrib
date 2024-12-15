@@ -12,7 +12,6 @@ import me.snoty.integration.common.wiring.get
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
-import me.snoty.integration.common.wiring.node.Subsystem
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
 import me.snoty.integration.contrib.willhaben.api.WillhabenListing
 import org.koin.core.annotation.Single
@@ -28,8 +27,7 @@ data class WillhabenListingSettings(
 ) : NodeSettings
 
 @RegisterNode(
-	subsystem = Subsystem.INTEGRATION,
-	type = "willhaben_listing",
+	name = "willhaben_listing",
 	displayName = "Willhaben Anzeige",
 	position = NodePosition.START,
 	settingsType = WillhabenListingSettings::class,

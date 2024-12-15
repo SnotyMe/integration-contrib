@@ -9,13 +9,11 @@ import me.snoty.integration.common.wiring.data.NodeOutput
 import me.snoty.integration.common.wiring.data.mapWithSettings
 import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
-import me.snoty.integration.common.wiring.node.Subsystem
 import org.koin.core.annotation.Single
 
 @RegisterNode(
 	displayName = "Studyly",
-	subsystem = Subsystem.INTEGRATION,
-	type = "studyly",
+	name = "studyly",
 	position = NodePosition.START,
 	settingsType = StudylySettings::class,
 	outputType = StudylyHomework::class,
