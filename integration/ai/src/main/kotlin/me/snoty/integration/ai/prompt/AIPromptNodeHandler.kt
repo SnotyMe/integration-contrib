@@ -40,8 +40,7 @@ data class AIPromptOutput(
 )
 
 @RegisterNode(
-	subsystem = AI,
-	type = "ai_prompt",
+	name = "ai_prompt",
 	displayName = "AI Prompt",
 	position = NodePosition.MIDDLE,
 	settingsType = AIPromptSettings::class,
