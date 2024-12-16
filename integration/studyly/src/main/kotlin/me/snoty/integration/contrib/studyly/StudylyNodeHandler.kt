@@ -12,8 +12,8 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import org.koin.core.annotation.Single
 
 @RegisterNode(
-	displayName = "Studyly",
 	name = "studyly",
+	displayName = "Studyly",
 	position = NodePosition.START,
 	settingsType = StudylySettings::class,
 	outputType = StudylyHomework::class,
