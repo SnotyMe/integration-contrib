@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -27,22 +28,43 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 	val logger = KotlinLogging.logger {}
 
 	override suspend fun fetchListing(url: String): WillhabenListing? {
-		val mappedUrl = parseWillhabenUrl(url)
-		if (mappedUrl.segments.firstOrNull() != "iad" || !mappedUrl.segments.contains("d")) throw IllegalArgumentException("Not a listing URL: $url")
+		var mappedUrl = parseWillhabenUrl(url)
+		if (
+			mappedUrl.segments.firstOrNull() != "iad"
+			|| (
+				!mappedUrl.segments.contains("d")
+				&& mappedUrl.segments.last() != "object"
+			)
+		) throw IllegalArgumentException("Not a listing URL: $url")
 
-		val response = try {
-			noRedirectClient.get(mappedUrl)
-		} catch (redirect: RedirectResponseException) {
-			val location = redirect.response.headers[HttpHeaders.Location] ?: throw redirect
+		lateinit var response: HttpResponse
 
-			if (location.contains("?fromExpiredAdId=")) {
-				logger.warn { "Listing $url is expired" }
-				return null
+		for (attempt in 0..3) {
+			try {
+				logger.debug { "Attempting to fetch $mappedUrl - attempt $attempt" }
+				response = noRedirectClient.get(mappedUrl)
+				break
+			} catch (redirect: RedirectResponseException) {
+				val location = redirect.response.headers[HttpHeaders.Location] ?: throw redirect
+
+				if (location.contains("?fromExpiredAdId=")) {
+					logger.warn { "Listing $url is expired" }
+					return null
+				}
+				if (!location.contains("/d/")) throw IllegalArgumentException("Invalid redirect location: $location")
+
+				// redirect may be valid (/iad/object?adId=... -> /iad/.../d/...) - try the new URL
+				val newUrlBuilder = URLBuilder()
+				newUrlBuilder.protocol = URLProtocol.HTTPS
+				// since we manually follow the redirect, use WILLHABEN_HOST as the default
+				newUrlBuilder.host = WILLHABEN_HOST
+				// and override the path with the relative path gotten from the original request
+				newUrlBuilder.path(location)
+				val newUrl = newUrlBuilder.build()
+
+				logger.debug { "Redirected to $newUrl" }
+				mappedUrl = newUrl
 			}
-			if (!location.contains("/d/")) throw IllegalArgumentException("Invalid redirect location: $location")
-
-			// redirect may be valid (http -> https?) - try the new URL
-			noRedirectClient.get(location)
 		}
 
 		val props = response.parsePageProps(json)
