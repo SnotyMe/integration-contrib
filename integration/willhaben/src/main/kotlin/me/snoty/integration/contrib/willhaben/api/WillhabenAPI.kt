@@ -28,7 +28,13 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 
 	override suspend fun fetchListing(url: String): WillhabenListing? {
 		val mappedUrl = parseWillhabenUrl(url)
-		if (mappedUrl.segments.firstOrNull() != "iad" || !mappedUrl.segments.contains("d")) throw IllegalArgumentException("Not a listing URL: $url")
+		if (
+			mappedUrl.segments.firstOrNull() != "iad"
+			|| (
+				!mappedUrl.segments.contains("d")
+				&& mappedUrl.segments.last() != "object"
+			)
+		) throw IllegalArgumentException("Not a listing URL: $url")
 
 		val response = try {
 			noRedirectClient.get(mappedUrl)
