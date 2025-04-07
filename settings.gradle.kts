@@ -5,6 +5,8 @@ plugins {
 }
 rootProject.name = "integration-contrib"
 
+include("utils")
+
 // include all integrations per default
 File(rootDir, "integration")
 	.listFiles()!!

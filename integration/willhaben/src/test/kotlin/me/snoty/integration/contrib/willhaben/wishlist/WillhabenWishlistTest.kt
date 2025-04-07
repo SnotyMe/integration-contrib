@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
@@ -14,6 +15,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import java.io.File
 
+@OptIn(ExperimentalSerializationApi::class)
 fun main(): Unit = runBlocking {
 	val creds: WillhabenCredentials = Json.decodeFromStream(File("credentials.json").inputStream())
 	val json = Json

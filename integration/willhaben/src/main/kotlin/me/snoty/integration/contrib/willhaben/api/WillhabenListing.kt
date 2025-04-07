@@ -6,6 +6,7 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import me.snoty.integration.contrib.utils.getOrThrow
 import kotlin.collections.firstOrNull
 import kotlin.collections.joinToString
 
@@ -20,10 +21,10 @@ data class WillhabenListing(
 
 fun JsonObject.parseListing(): WillhabenListing {
 	val id = this["id"]
-	val title = el("description").jsonPrimitive.content
-	val attributes = el("attributes").jsonObject.el("attribute").jsonArray.associate {
-		val key = it.jsonObject.el("name").jsonPrimitive.content
-		val value = it.jsonObject.el("values").jsonArray.toList()
+	val title = getOrThrow("description").jsonPrimitive.content
+	val attributes = getOrThrow("attributes").jsonObject.getOrThrow("attribute").jsonArray.associate {
+		val key = it.jsonObject.getOrThrow("name").jsonPrimitive.content
+		val value = it.jsonObject.getOrThrow("values").jsonArray.toList()
 		key to value
 	}
 

@@ -3,7 +3,5 @@ version = "UNSET"
 
 subprojects {
 	apply(plugin = "snoty.kotlin-conventions")
-	if (path.startsWith(":integration:")) {
-		apply(plugin = "snoty.integration-conventions")
-	}
+	apply(plugin = "snoty.integration-conventions")
 }

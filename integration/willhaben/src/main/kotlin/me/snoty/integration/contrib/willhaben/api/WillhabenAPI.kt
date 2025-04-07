@@ -9,6 +9,8 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import me.snoty.integration.contrib.utils.getOrThrow
+import me.snoty.integration.contrib.utils.parseNextPageProps
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -67,8 +69,8 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 			}
 		}
 
-		val props = response.parsePageProps(json)
-		val advertDetails = props.el("advertDetails").jsonObject
+		val props = response.parseNextPageProps(json)
+		val advertDetails = props.getOrThrow("advertDetails").jsonObject
 
 		return advertDetails.parseListing()
 	}
@@ -76,12 +78,13 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 	override suspend fun fetchWishlist(creds: WillhabenCredentials): WillhabenWishlist {
 		val response = httpClient.getAuthenticated(WISHLIST_PATH, creds)
 
-		val props = response.parsePageProps(json)
-		val listings = props.el("pageProps").jsonObject
-			.el("pageProps").jsonObject
-			.el("currentSavedAds").jsonObject
-			.el("advertFolderItemList").jsonObject
-			.el("advertFolderItems").jsonArray
+		val props = response.parseNextPageProps(json)
+		val listings = props
+			.getOrThrow("pageProps").jsonObject
+			.getOrThrow("pageProps").jsonObject
+			.getOrThrow("currentSavedAds").jsonObject
+			.getOrThrow("advertFolderItemList").jsonObject
+			.getOrThrow("advertFolderItems").jsonArray
 			.map { it.jsonObject.parseListing() }
 
 		return listings
