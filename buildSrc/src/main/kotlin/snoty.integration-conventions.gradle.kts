@@ -29,7 +29,8 @@ dependencies {
 }
 
 tasks.jar {
-	dependsOn(tasks.shadowJar)
+	archiveClassifier = "nodeps"
+	finalizedBy(tasks.shadowJar)
 }
 
 tasks.shadowJar {
