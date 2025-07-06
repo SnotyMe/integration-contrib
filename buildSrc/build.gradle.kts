@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+	implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+
 	implementation(kotlin("serialization"))
 	libs.plugins.kotlin.jvm.get().apply {
 		implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$version")
