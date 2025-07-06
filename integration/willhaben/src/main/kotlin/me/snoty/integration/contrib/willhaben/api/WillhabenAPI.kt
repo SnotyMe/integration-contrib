@@ -4,20 +4,25 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import me.snoty.integration.contrib.utils.getOrThrow
 import me.snoty.integration.contrib.utils.parseNextPageProps
+import me.snoty.integration.contrib.willhaben.utils.mapIf
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 interface WillhabenAPI {
 	suspend fun fetchListing(url: String): WillhabenListing?
-	suspend fun fetchWishlist(creds: WillhabenCredentials): List<WillhabenListing>
+
+	/**
+	 * @param cleanTitle whether to attempt to strip listing titles down to the actual names (without additional metadata)
+	 */
+	suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): List<WillhabenListing>
 }
 
 @Single
@@ -75,7 +80,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		return advertDetails.parseListing(json)
 	}
 
-	override suspend fun fetchWishlist(creds: WillhabenCredentials): WillhabenWishlist {
+	override suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): WillhabenWishlist {
 		val response = httpClient.getAuthenticated(WISHLIST_PATH, creds)
 
 		val props = response.parseNextPageProps(json)
@@ -86,6 +91,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 			.getOrThrow("advertFolderItemList").jsonObject
 			.getOrThrow("advertFolderItems").jsonArray
 			.map { it.jsonObject.parseListing(json) }
+			.mapIf(cleanTitle, WillhabenListing::cleanTitleFromWishlist)
 
 		return listings
 	}
