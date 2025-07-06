@@ -72,7 +72,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		val props = response.parseNextPageProps(json)
 		val advertDetails = props.getOrThrow("advertDetails").jsonObject
 
-		return advertDetails.parseListing()
+		return advertDetails.parseListing(json)
 	}
 
 	override suspend fun fetchWishlist(creds: WillhabenCredentials): WillhabenWishlist {
@@ -85,7 +85,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 			.getOrThrow("currentSavedAds").jsonObject
 			.getOrThrow("advertFolderItemList").jsonObject
 			.getOrThrow("advertFolderItems").jsonArray
-			.map { it.jsonObject.parseListing() }
+			.map { it.jsonObject.parseListing(json) }
 
 		return listings
 	}
