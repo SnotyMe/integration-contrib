@@ -25,24 +25,24 @@ fun JsonObject.parseListing(json: Json): WillhabenListing {
 	val id = this["id"]
 	val attributes = getOrThrow("attributes").jsonObject.getOrThrow("attribute").jsonArray.associate {
 		val key = it.jsonObject.getOrThrow("name").jsonPrimitive.content
-		val value = it.jsonObject.getOrThrow("values").jsonArray.toList()
+		val value = it.jsonObject.getOrThrow("values").jsonArray.map { item -> item.jsonPrimitive }
 		key to value
 	}
 
 	val title = getOrThrow("description").jsonPrimitive.content
-	val description = attributes["DESCRIPTION"]
+	val description = attributes["DESCRIPTION"]?.joinToString("\n") { it.content }
 		?: throw IllegalArgumentException("Description not found in listing")
-	val price = attributes["PRICE"]?.firstOrNull()?.jsonPrimitive?.doubleOrNull
+	val price = attributes["PRICE"]?.firstOrNull()?.doubleOrNull
 		?: throw IllegalArgumentException("Price not found in listing")
 	val status: WillhabenStatus = json.decodeFromJsonElement(getOrThrow("advertStatus"))
 
 	return WillhabenListing(
 		id = id!!.jsonPrimitive.content,
 		title = title,
-		description = description.joinToString("\n"),
+		description = description,
 		price = price,
 		attributes = attributes.mapValues { (_, values) ->
-			values.map { it.jsonPrimitive.content }
+			values.map { it.content }
 		},
 		status = status,
 	)
