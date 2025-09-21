@@ -1,0 +1,46 @@
+on:
+  push:
+    tags:
+      - '*_*.*.*' # match tags like autoscout_1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Build Integration
+        id: build
+        run: |
+          tag='${{ github.ref_name }}'
+          integration="${tag%%_*}"
+          version="${tag#*_}"
+
+          gradle_version="$(./gradlew -q ":integration:$integration:version")"
+          if [[ "$gradle_version" != "$version" ]]; then
+            echo "Integration version ${gradle_version} doesn't match tag version ${version}!"
+            exit 1
+          fi
+
+          echo "integration=$integration" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          ./gradlew clean ":integration:$integration:build"
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: ${{ contains(steps.build.outputs.version, '-') }}
+          artifacts: "integration/${{ steps.build.outputs.integration }}/build/libs/${{ steps.build.outputs.integration }}-${{ steps.build.outputs.version }}.jar"
+          # always draft to have a chance to review before publishing
+          draft: true
+          generateReleaseNotes: true

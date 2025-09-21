@@ -57,3 +57,7 @@ tasks.shadowJar {
 
 	mergeServiceFiles()
 }
+
+tasks.register("version") {
+	println(version)
+}
