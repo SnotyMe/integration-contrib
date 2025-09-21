@@ -18,6 +18,9 @@ jobs:
           java-version: 21
           distribution: temurin
 
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Build Integration
         id: build
         run: |
@@ -33,12 +36,14 @@ jobs:
 
           echo "integration=$integration" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "release_name=${integration^} ${version}" >> "$GITHUB_OUTPUT"
 
           ./gradlew clean ":integration:$integration:build"
 
       - name: Release
         uses: ncipollo/release-action@v1
         with:
+          name: "${{ steps.build.outputs.release_name }}"
           prerelease: ${{ contains(steps.build.outputs.version, '-') }}
           artifacts: "integration/${{ steps.build.outputs.integration }}/build/libs/${{ steps.build.outputs.integration }}-${{ steps.build.outputs.version }}.jar"
           # always draft to have a chance to review before publishing
