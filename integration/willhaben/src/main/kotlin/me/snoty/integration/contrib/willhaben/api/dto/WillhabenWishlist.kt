@@ -1,4 +1,4 @@
-package me.snoty.integration.contrib.willhaben.api
+package me.snoty.integration.contrib.willhaben.api.dto
 
 typealias WillhabenWishlist = List<WillhabenListing>
 

@@ -11,6 +11,12 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import me.snoty.integration.contrib.utils.getOrThrow
 import me.snoty.integration.contrib.utils.parseNextPageProps
+import me.snoty.integration.contrib.willhaben.api.dto.WillhabenListing
+import me.snoty.integration.contrib.willhaben.api.dto.WillhabenSearchResult
+import me.snoty.integration.contrib.willhaben.api.dto.WillhabenWishlist
+import me.snoty.integration.contrib.willhaben.api.dto.cleanTitleFromWishlist
+import me.snoty.integration.contrib.willhaben.api.dto.parseListing
+import me.snoty.integration.contrib.willhaben.api.dto.parseSearchResult
 import me.snoty.integration.contrib.willhaben.utils.mapIf
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
@@ -23,6 +29,11 @@ interface WillhabenAPI {
 	 * @param cleanTitle whether to attempt to strip listing titles down to the actual names (without additional metadata)
 	 */
 	suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): List<WillhabenListing>
+
+	/**
+	 * @param query the search query (stuff after `/iad/`)
+	 */
+	suspend fun search(query: String): List<WillhabenSearchResult>
 }
 
 @Single
@@ -94,5 +105,24 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 			.mapIf(cleanTitle, WillhabenListing::cleanTitleFromWishlist)
 
 		return listings
+	}
+
+	override suspend fun search(query: String): List<WillhabenSearchResult> {
+		val url = URLBuilder().apply {
+			protocol = URLProtocol.HTTPS
+			host = WILLHABEN_HOST
+			appendEncodedPathSegments("iad", query)
+		}.build()
+
+		val response = httpClient.get(url)
+
+		val props = response.parseNextPageProps(json)
+		val searchResults = props
+			.getOrThrow("searchResult").jsonObject
+			.getOrThrow("advertSummaryList").jsonObject
+			.getOrThrow("advertSummary").jsonArray
+			.map { it.jsonObject.parseSearchResult(json) }
+
+		return searchResults
 	}
 }

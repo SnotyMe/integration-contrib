@@ -14,7 +14,7 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
 import me.snoty.integration.contrib.willhaben.api.WillhabenCredentials
-import me.snoty.integration.contrib.willhaben.api.WillhabenListing
+import me.snoty.integration.contrib.willhaben.api.dto.WillhabenListing
 import org.koin.core.annotation.Single
 
 @Serializable

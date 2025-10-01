@@ -1,4 +1,4 @@
-package me.snoty.integration.contrib.willhaben.api
+package me.snoty.integration.contrib.willhaben.api.dto
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
