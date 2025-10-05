@@ -82,6 +82,15 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 
 				logger.debug { "Redirected to $newUrl" }
 				mappedUrl = newUrl
+			} catch (ex: ClientRequestException) {
+				when (ex.response.status) {
+					HttpStatusCode.NotFound, HttpStatusCode.Gone -> {
+						logger.warn { "Listing $url is expired" }
+						return null
+					}
+					HttpStatusCode.Forbidden -> throw WillhabenBlockedException()
+					else -> throw WillhabenRequestException(ex)
+				}
 			}
 		}
 
@@ -92,7 +101,14 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 	}
 
 	override suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): WillhabenWishlist {
-		val response = httpClient.getAuthenticated(WISHLIST_PATH, creds)
+		val response = try {
+			httpClient.getAuthenticated(WISHLIST_PATH, creds)
+		} catch (ex: ClientRequestException) {
+			when (ex.response.status) {
+				HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden -> throw WillhabenBlockedException()
+				else -> throw WillhabenRequestException(ex)
+			}
+		}
 
 		val props = response.parseNextPageProps(json)
 		val listings = props
@@ -114,7 +130,14 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 			appendEncodedPathSegments("iad", query)
 		}.build()
 
-		val response = httpClient.get(url)
+		val response = try {
+			httpClient.get(url)
+		} catch (ex: ClientRequestException) {
+			when (ex.response.status) {
+				HttpStatusCode.Forbidden -> throw WillhabenBlockedException()
+				else -> throw WillhabenRequestException(ex)
+			}
+		}
 
 		val props = response.parseNextPageProps(json)
 		val searchResults = props
