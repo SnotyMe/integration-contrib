@@ -2,7 +2,6 @@ package me.snoty.integration.ai.prompt
 
 import io.ktor.client.*
 import kotlinx.serialization.Serializable
-import me.snoty.integration.ai.AI
 import me.snoty.integration.ai.openai.client.OpenAIClient
 import me.snoty.integration.ai.openai.client.OpenAIClientImpl
 import me.snoty.integration.ai.openai.client.OpenAIMessage
@@ -14,8 +13,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.data.get
+import me.snoty.integration.common.wiring.data.iterableStructOutput
+import me.snoty.integration.common.wiring.logger
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import org.bson.Document
@@ -53,11 +53,12 @@ class AIPromptNodeHandler(
 	httpClient: HttpClient,
 	private val openAIClient: OpenAIClient = OpenAIClientImpl(config.toOpenAIConfig(), httpClient)
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(ctx: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as AIPromptSettings
 
 		return iterableStructOutput(input.map { raw ->
-			val doc = get<Document>(raw)
+			val doc: Document = raw.get()
 
 			val prompts = listOf(
 				OpenAIMessage(

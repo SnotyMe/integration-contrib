@@ -7,9 +7,9 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.get
 import me.snoty.integration.common.wiring.data.impl.SimpleIntermediateData
-import me.snoty.integration.common.wiring.get
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
@@ -36,15 +36,16 @@ data class WillhabenListingSettings(
 )
 @Single
 class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(ctx: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenListingSettings
 
 		val mappedFromInput = input.mapNotNull {
 			// this node is also a start node, so the input may be the job context, in which case it is not parsed and used to fetch listings
 			if (it is SimpleIntermediateData) return@mapNotNull null
 
-			val data = get<ListingInput>(it)
-			willhabenAPI.fetchListing(data.url)
+			val data: ListingInput = it.get()
+			willhabenAPI.fetchListing(proxy, data.url)
 		}
 
 		val mappedFromSettings = settings.listings.mapNotNull {

@@ -6,8 +6,8 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.data.mapWithSettings
-import me.snoty.integration.common.wiring.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import org.koin.core.annotation.Single
 
@@ -20,7 +20,8 @@ import org.koin.core.annotation.Single
 )
 @Single
 class StudylyNodeHandler(private val api: StudylyAPI) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput = input.mapWithSettings<StudylySettings>(node) { settings ->
+	context(ctx: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput = input.mapWithSettings<StudylySettings>(node) { settings ->
 		val items = api.getHomework(settings)
 
 		iterableStructOutput(items)

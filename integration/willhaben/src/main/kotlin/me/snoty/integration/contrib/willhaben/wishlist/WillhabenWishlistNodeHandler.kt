@@ -9,7 +9,7 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
@@ -35,7 +35,8 @@ data class WillhabenWishlistSettings(
 )
 @Single
 class WillhabenWishlistNodeHandler(private val willhabenAPI: WillhabenAPI) : NodeHandler {
-	override suspend fun NodeHandleContext.process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	context(ctx: NodeHandleContext)
+	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenWishlistSettings
 
 		val mapped = willhabenAPI.fetchWishlist(settings.credentials, settings.cleanTitle)

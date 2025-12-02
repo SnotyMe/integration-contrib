@@ -8,7 +8,7 @@ import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
-import me.snoty.integration.common.wiring.iterableStructOutput
+import me.snoty.integration.common.wiring.data.iterableStructOutput
 import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.contrib.willhaben.api.WILLHABEN_HOST
@@ -34,7 +34,8 @@ data class WillhabenSearchSettings(
 class WillhabenSearchNodeHandler(
 	private val willhabenAPI: WillhabenAPI,
 ) : NodeHandler {
-	override suspend fun NodeHandleContext.process(
+	context(ctx: NodeHandleContext)
+	override suspend fun process(
 		node: Node,
 		input: Collection<IntermediateData>
 	): NodeOutput {
