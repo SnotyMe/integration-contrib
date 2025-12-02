@@ -33,5 +33,5 @@ fun main(): Unit = runBlocking {
 		})
 	}.koin
 
-	println(koin.get<WillhabenAPI>().fetchWishlist(creds, false))
+	println(koin.get<WillhabenAPI>().fetchWishlist(null, creds, false))
 }

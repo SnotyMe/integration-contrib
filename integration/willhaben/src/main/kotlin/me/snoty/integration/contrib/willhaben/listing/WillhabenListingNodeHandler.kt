@@ -1,6 +1,8 @@
 package me.snoty.integration.contrib.willhaben.listing
 
 import kotlinx.serialization.Serializable
+import me.snoty.backend.wiring.credential.CredentialRef
+import me.snoty.backend.wiring.credential.resolve
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -14,6 +16,7 @@ import me.snoty.integration.common.wiring.node.NodeHandler
 import me.snoty.integration.common.wiring.node.NodeSettings
 import me.snoty.integration.contrib.willhaben.api.WillhabenAPI
 import me.snoty.integration.contrib.willhaben.api.dto.WillhabenListing
+import me.snoty.integration.utils.proxy.ProxyCredential
 import org.koin.core.annotation.Single
 
 data class ListingInput(
@@ -23,7 +26,9 @@ data class ListingInput(
 @Serializable
 data class WillhabenListingSettings(
 	override val name: String = "Willhaben Anzeige",
-	val listings: List<String>
+	val listings: List<String>,
+
+	val proxy: CredentialRef<ProxyCredential>? = null,
 ) : NodeSettings
 
 @RegisterNode(
@@ -39,6 +44,7 @@ class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : Node
 	context(ctx: NodeHandleContext)
 	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenListingSettings
+		val proxy = settings.proxy?.resolve(node.userId.toString())
 
 		val mappedFromInput = input.mapNotNull {
 			// this node is also a start node, so the input may be the job context, in which case it is not parsed and used to fetch listings
@@ -49,7 +55,7 @@ class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : Node
 		}
 
 		val mappedFromSettings = settings.listings.mapNotNull {
-			willhabenAPI.fetchListing(it)
+			willhabenAPI.fetchListing(proxy, it)
 		}
 
 		return iterableStructOutput(mappedFromInput + mappedFromSettings)

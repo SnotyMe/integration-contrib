@@ -18,22 +18,24 @@ import me.snoty.integration.contrib.willhaben.api.dto.cleanTitleFromWishlist
 import me.snoty.integration.contrib.willhaben.api.dto.parseListing
 import me.snoty.integration.contrib.willhaben.api.dto.parseSearchResult
 import me.snoty.integration.contrib.willhaben.utils.mapIf
+import me.snoty.integration.utils.proxy.ProxyCredential
+import me.snoty.integration.utils.proxy.withOptionalProxy
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 interface WillhabenAPI {
-	suspend fun fetchListing(url: String): WillhabenListing?
+	suspend fun fetchListing(proxy: ProxyCredential?, url: String): WillhabenListing?
 
 	/**
 	 * @param cleanTitle whether to attempt to strip listing titles down to the actual names (without additional metadata)
 	 */
-	suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): List<WillhabenListing>
+	suspend fun fetchWishlist(proxy: ProxyCredential?, creds: WillhabenCredentials, cleanTitle: Boolean): List<WillhabenListing>
 
 	/**
 	 * @param query the search query (stuff after `/iad/`)
 	 */
-	suspend fun search(query: String): List<WillhabenSearchResult>
+	suspend fun search(proxy: ProxyCredential?, query: String): List<WillhabenSearchResult>
 }
 
 @Single
@@ -45,7 +47,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 
 	val logger = KotlinLogging.logger {}
 
-	override suspend fun fetchListing(url: String): WillhabenListing? {
+	override suspend fun fetchListing(proxy: ProxyCredential?, url: String): WillhabenListing? {
 		var mappedUrl = parseWillhabenUrl(url)
 		if (
 			mappedUrl.segments.firstOrNull() != "iad"
@@ -60,7 +62,9 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		for (attempt in 0..3) {
 			try {
 				logger.debug { "Attempting to fetch $mappedUrl - attempt $attempt" }
-				response = noRedirectClient.get(mappedUrl)
+				response = noRedirectClient
+					.withOptionalProxy(proxy)
+					.get(mappedUrl)
 				break
 			} catch (redirect: RedirectResponseException) {
 				val location = redirect.response.headers[HttpHeaders.Location] ?: throw redirect
@@ -100,9 +104,11 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		return advertDetails.parseListing(json)
 	}
 
-	override suspend fun fetchWishlist(creds: WillhabenCredentials, cleanTitle: Boolean): WillhabenWishlist {
+	override suspend fun fetchWishlist(proxy: ProxyCredential?, creds: WillhabenCredentials, cleanTitle: Boolean): WillhabenWishlist {
 		val response = try {
-			httpClient.getAuthenticated(WISHLIST_PATH, creds)
+			httpClient
+				.withOptionalProxy(proxy)
+				.getAuthenticated(WISHLIST_PATH, creds)
 		} catch (ex: ClientRequestException) {
 			when (ex.response.status) {
 				HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden -> throw WillhabenBlockedException()
@@ -123,7 +129,7 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		return listings
 	}
 
-	override suspend fun search(query: String): List<WillhabenSearchResult> {
+	override suspend fun search(proxy: ProxyCredential?, query: String): List<WillhabenSearchResult> {
 		val url = URLBuilder().apply {
 			protocol = URLProtocol.HTTPS
 			host = WILLHABEN_HOST
@@ -131,7 +137,9 @@ class WillhabenAPIImpl(private val httpClient: HttpClient) : WillhabenAPI, KoinC
 		}.build()
 
 		val response = try {
-			httpClient.get(url)
+			httpClient
+				.withOptionalProxy(proxy)
+				.get(url)
 		} catch (ex: ClientRequestException) {
 			when (ex.response.status) {
 				HttpStatusCode.Forbidden -> throw WillhabenBlockedException()
