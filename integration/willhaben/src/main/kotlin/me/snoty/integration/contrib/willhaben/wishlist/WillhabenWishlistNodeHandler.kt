@@ -3,6 +3,7 @@ package me.snoty.integration.contrib.willhaben.wishlist
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
@@ -23,7 +24,7 @@ import org.koin.core.annotation.Single
 @Serializable
 data class WillhabenWishlistSettings(
 	override val name: String = "Willhaben Merkliste",
-	val credentials: CredentialRef<WillhabenCredentials>,
+	val credentials: CredentialRef<WillhabenCredentials>? = null,
 	@FieldDescription("Vehicle listings contain the year, odometer, price and an optional status in the title. This setting will attempt to strip it to just the vehicle name, removing all additional metadata. May resolve side-effects when computing differences.")
 	@FieldDefaultValue("true")
 	val cleanTitle: Boolean = false, // set to false for backwards compatibility
@@ -42,7 +43,7 @@ class WillhabenWishlistNodeHandler(private val willhabenAPI: WillhabenAPI) : Nod
 	context(ctx: NodeHandleContext)
 	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenWishlistSettings
-		val proxy = settings.proxy?.resolve(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
 		val credentials = settings.credentials.resolve(node.userId.toString())
 
 		val mapped = willhabenAPI.fetchWishlist(proxy, credentials, settings.cleanTitle)

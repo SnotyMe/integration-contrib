@@ -2,7 +2,7 @@ package me.snoty.integration.contrib.willhaben.listing
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
-import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -44,7 +44,7 @@ class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : Node
 	context(ctx: NodeHandleContext)
 	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenListingSettings
-		val proxy = settings.proxy?.resolve(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
 
 		val mappedFromInput = input.mapNotNull {
 			// this node is also a start node, so the input may be the job context, in which case it is not parsed and used to fetch listings

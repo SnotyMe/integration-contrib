@@ -2,7 +2,7 @@ package me.snoty.integration.contrib.willhaben.search
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
-import me.snoty.backend.wiring.credential.resolve
+import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
@@ -44,7 +44,7 @@ class WillhabenSearchNodeHandler(
 		input: Collection<IntermediateData>
 	): NodeOutput {
 		val settings = node.settings as WillhabenSearchSettings
-		val proxy = settings.proxy?.resolve(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
 		val result = willhabenAPI.search(proxy, settings.query)
 		return iterableStructOutput(result)
 	}
