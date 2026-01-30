@@ -1,7 +1,10 @@
 name: Test
 on:
-  - pull_request
-  - push
+  pull_request:
+  push:
+    tags-ignore:
+      - '**' # covered by integration-ci.yml
+
 permissions:
   checks: write
 jobs:
