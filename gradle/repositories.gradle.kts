@@ -10,12 +10,3 @@ dependencyResolutionManagement {
 		}
 	}
 }
-
-buildscript {
-	repositories {
-		gradlePluginPortal()
-	}
-	dependencies {
-		classpath("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
-	}
-}

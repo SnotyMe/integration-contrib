@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin.Companion.shadowJar
-
 plugins {
 	kotlin("jvm")
 	id("com.google.devtools.ksp")
@@ -59,7 +57,7 @@ tasks.shadowJar {
 		}
 	}
 
-	enableRelocation = true
+	enableAutoRelocation = true
 	// names have to be unique anyway
 	relocationPrefix = project.name
 
