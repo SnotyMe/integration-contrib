@@ -43,8 +43,8 @@ class WillhabenWishlistNodeHandler(private val willhabenAPI: WillhabenAPI) : Nod
 	context(ctx: NodeHandleContext)
 	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenWishlistSettings
-		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
-		val credentials = settings.credentials.resolve(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId)
+		val credentials = settings.credentials.resolve(node.userId)
 
 		val mapped = willhabenAPI.fetchWishlist(proxy, credentials, settings.cleanTitle)
 

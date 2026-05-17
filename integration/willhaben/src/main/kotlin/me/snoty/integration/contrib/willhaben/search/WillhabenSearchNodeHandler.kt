@@ -44,7 +44,7 @@ class WillhabenSearchNodeHandler(
 		input: Collection<IntermediateData>
 	): NodeOutput {
 		val settings = node.settings as WillhabenSearchSettings
-		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId)
 		val result = willhabenAPI.search(proxy, settings.query)
 		return iterableStructOutput(result)
 	}

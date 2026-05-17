@@ -44,7 +44,7 @@ class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : Node
 	context(ctx: NodeHandleContext)
 	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenListingSettings
-		val proxy = settings.proxy.resolveOrNull(node.userId.toString())
+		val proxy = settings.proxy.resolveOrNull(node.userId)
 
 		val mappedFromInput = input.mapNotNull {
 			// this node is also a start node, so the input may be the job context, in which case it is not parsed and used to fetch listings
