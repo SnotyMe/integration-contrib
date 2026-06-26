@@ -57,10 +57,6 @@ tasks.shadowJar {
 		}
 	}
 
-	enableAutoRelocation = true
-	// names have to be unique anyway
-	relocationPrefix = project.name
-
 	mergeServiceFiles()
 }
 
