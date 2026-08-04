@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolve
 import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
@@ -34,6 +35,7 @@ data class WillhabenWishlistSettings(
 @RegisterNode(
 	name = "willhaben_wishlist",
 	displayName = "Willhaben Merkliste",
+	icon = Icon(name = "arcticons-willhaben", color = "#00A4E8"),
 	position = NodePosition.START,
 	settingsType = WillhabenWishlistSettings::class,
 	outputType = WillhabenListing::class,

@@ -3,6 +3,7 @@ package me.snoty.integration.contrib.willhaben.listing
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.wiring.Node
@@ -34,6 +35,7 @@ data class WillhabenListingSettings(
 @RegisterNode(
 	name = "willhaben_listing",
 	displayName = "Willhaben Anzeige",
+	icon = Icon(name = "arcticons-willhaben", color = "#00A4E8"),
 	position = NodePosition.START,
 	settingsType = WillhabenListingSettings::class,
 	inputType = ListingInput::class,

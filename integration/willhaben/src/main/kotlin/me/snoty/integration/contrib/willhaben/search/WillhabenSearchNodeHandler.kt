@@ -3,6 +3,7 @@ package me.snoty.integration.contrib.willhaben.search
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDescription
@@ -30,6 +31,7 @@ data class WillhabenSearchSettings(
 @RegisterNode(
 	name = "willhaben_search",
 	displayName = "Willhaben Suche",
+	icon = Icon(name = "arcticons-willhaben", color = "#00A4E8"),
 	settingsType = WillhabenSearchSettings::class,
 	outputType = WillhabenSearchResult::class,
 	position = NodePosition.START,
