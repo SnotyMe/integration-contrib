@@ -6,7 +6,6 @@ import me.snoty.integration.common.wiring.node.NodeSettings
 
 @Serializable
 data class StudylySettings(
-	override val name: String = "Studyly",
 	@FieldCensored
 	val sessionId: String,
 ) : NodeSettings

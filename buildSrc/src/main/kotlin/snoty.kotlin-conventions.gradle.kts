@@ -17,12 +17,3 @@ dependencies {
 tasks.test {
 	useJUnitPlatform()
 }
-
-// TODO: remove when upgrading to Snoty 0.8.0
-kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll(
-			"-Xskip-prerelease-check"
-		)
-	}
-}

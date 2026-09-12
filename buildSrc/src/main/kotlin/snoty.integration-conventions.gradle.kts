@@ -4,13 +4,6 @@ plugins {
 	id("com.gradleup.shadow")
 }
 
-kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll("-Xcontext-parameters")
-		optIn.addAll("kotlin.uuid.ExperimentalUuidApi")
-	}
-}
-
 apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 apply(plugin = "snoty.koin-conventions")
 apply(plugin = "com.gradleup.shadow")

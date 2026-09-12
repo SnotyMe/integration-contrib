@@ -3,10 +3,10 @@ package me.snoty.integration.contrib.willhaben.listing
 import kotlinx.serialization.Serializable
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolveOrNull
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.Icon
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
@@ -26,7 +26,6 @@ data class ListingInput(
 
 @Serializable
 data class WillhabenListingSettings(
-	override val name: String = "Willhaben Anzeige",
 	val listings: List<String>,
 
 	val proxy: CredentialRef<ProxyCredential>? = null,
@@ -44,7 +43,7 @@ data class WillhabenListingSettings(
 @Single
 class WillhabenListingNodeHandler(private val willhabenAPI: WillhabenAPI) : NodeHandler {
 	context(ctx: NodeHandleContext)
-	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as WillhabenListingSettings
 		val proxy = settings.proxy.resolveOrNull(node.userId)
 

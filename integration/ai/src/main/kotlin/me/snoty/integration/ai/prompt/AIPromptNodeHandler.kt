@@ -2,6 +2,7 @@ package me.snoty.integration.ai.prompt
 
 import io.ktor.client.*
 import kotlinx.serialization.Serializable
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.ai.openai.client.OpenAIClient
 import me.snoty.integration.ai.openai.client.OpenAIClientImpl
 import me.snoty.integration.ai.openai.client.OpenAIMessage
@@ -9,7 +10,6 @@ import me.snoty.integration.ai.openai.client.OpenAIRoles
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
 import me.snoty.integration.common.model.metadata.FieldDefaultValue
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
@@ -23,7 +23,6 @@ import org.koin.core.annotation.Single
 
 @Serializable
 data class AIPromptSettings(
-	override val name: String = "AI Prompt",
 	val systemPrompt: String,
 	@FieldDefaultValue("userPrompt")
 	val inputKey: String = "userPrompt",
@@ -54,7 +53,7 @@ class AIPromptNodeHandler(
 	private val openAIClient: OpenAIClient = OpenAIClientImpl(config.toOpenAIConfig(), httpClient)
 ) : NodeHandler {
 	context(ctx: NodeHandleContext)
-	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as AIPromptSettings
 
 		return iterableStructOutput(input.map { raw ->

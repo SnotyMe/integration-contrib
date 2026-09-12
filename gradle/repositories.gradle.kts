@@ -6,7 +6,7 @@ dependencyResolutionManagement {
 	}
 	versionCatalogs {
 		create("snoty") {
-			from("me.snoty:versions:0.8.0-alpha.2")
+			from("me.snoty:versions:0.8.0-alpha.3")
 		}
 	}
 }

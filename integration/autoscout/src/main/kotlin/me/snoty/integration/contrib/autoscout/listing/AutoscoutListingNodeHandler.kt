@@ -1,9 +1,9 @@
 package me.snoty.integration.contrib.autoscout.listing
 
 import kotlinx.serialization.Serializable
+import me.snoty.core.node.NodeWithSettings
 import me.snoty.integration.common.annotation.RegisterNode
 import me.snoty.integration.common.model.NodePosition
-import me.snoty.integration.common.wiring.Node
 import me.snoty.integration.common.wiring.NodeHandleContext
 import me.snoty.integration.common.wiring.data.IntermediateData
 import me.snoty.integration.common.wiring.data.NodeOutput
@@ -22,7 +22,6 @@ data class ListingInput(
 
 @Serializable
 data class AutoscoutListingInput(
-	override val name: String = "Autoscout Listing",
 	val listings: List<String>
 ) : NodeSettings
 
@@ -37,7 +36,7 @@ data class AutoscoutListingInput(
 @Single
 class AutoscoutListingNodeHandler(private val autoscoutAPI: AutoscoutAPI) : NodeHandler {
 	context(ctx: NodeHandleContext)
-	override suspend fun process(node: Node, input: Collection<IntermediateData>): NodeOutput {
+	override suspend fun process(node: NodeWithSettings, input: Collection<IntermediateData>): NodeOutput {
 		val settings = node.settings as AutoscoutListingInput
 
 		val mappedFromInput = input.mapNotNull {
