@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     tags-ignore:
-      - '**' # covered by integration-ci.yml
+      - '**' # covered by extension-ci.yml
 
 permissions:
   checks: write
