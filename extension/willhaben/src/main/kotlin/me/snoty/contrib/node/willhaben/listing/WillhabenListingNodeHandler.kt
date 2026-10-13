@@ -1,7 +1,6 @@
 package me.snoty.contrib.node.willhaben.listing
 
 import kotlinx.serialization.Serializable
-import me.snoty.backend.utils.proxy.ProxyCredential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.backend.wiring.data.NodeInput
@@ -14,6 +13,7 @@ import me.snoty.backend.wiring.node.metadata.NodeStereotype
 import me.snoty.core.node.NodeWithSettings
 import me.snoty.contrib.node.willhaben.api.WillhabenAPI
 import me.snoty.contrib.node.willhaben.api.dto.WillhabenListing
+import me.snoty.core.credential.ProxyCredential
 import org.koin.core.annotation.Single
 
 data class ListingInput(

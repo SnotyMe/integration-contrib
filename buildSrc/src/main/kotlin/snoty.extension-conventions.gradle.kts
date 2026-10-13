@@ -16,6 +16,7 @@ dependencies {
 	val snotyVersion = libs.findVersion("snoty").get().displayName
 
 	compileOnly("me.snoty:api:$snotyVersion")
+	compileOnly("me.snoty:node-api:$snotyVersion")
 	if (project.name != "utils") {
 		implementation(project(":utils"))
 	}

@@ -2,7 +2,6 @@ package me.snoty.contrib.node.willhaben.search
 
 import kotlinx.serialization.Serializable
 import me.snoty.backend.schema.FieldDescription
-import me.snoty.backend.utils.proxy.ProxyCredential
 import me.snoty.backend.wiring.credential.CredentialRef
 import me.snoty.backend.wiring.credential.resolveOrNull
 import me.snoty.backend.wiring.data.NodeInput
@@ -10,10 +9,11 @@ import me.snoty.backend.wiring.data.NodeOutput
 import me.snoty.backend.wiring.data.iterableStructOutput
 import me.snoty.backend.wiring.node.*
 import me.snoty.backend.wiring.node.metadata.NodeStereotype
-import me.snoty.core.node.NodeWithSettings
 import me.snoty.contrib.node.willhaben.api.WILLHABEN_HOST
 import me.snoty.contrib.node.willhaben.api.WillhabenAPI
 import me.snoty.contrib.node.willhaben.api.dto.WillhabenSearchResult
+import me.snoty.core.credential.ProxyCredential
+import me.snoty.core.node.NodeWithSettings
 import org.koin.core.annotation.Single
 
 @Serializable

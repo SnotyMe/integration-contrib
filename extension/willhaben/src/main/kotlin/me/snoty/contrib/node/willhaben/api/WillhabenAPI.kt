@@ -9,12 +9,12 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import me.snoty.backend.utils.proxy.ProxyCredential
-import me.snoty.backend.utils.proxy.withOptionalProxy
-import me.snoty.contrib.utils.getOrThrow
-import me.snoty.contrib.utils.parseNextPageProps
 import me.snoty.contrib.node.willhaben.api.dto.*
 import me.snoty.contrib.node.willhaben.utils.mapIf
+import me.snoty.contrib.utils.getOrThrow
+import me.snoty.contrib.utils.parseNextPageProps
+import me.snoty.core.credential.ProxyCredential
+import me.snoty.core.credential.withOptionalProxy
 import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
